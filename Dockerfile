@@ -49,6 +49,9 @@ COPY --from=feelingsurf_src /usr/bin/FeelingSurfViewer /usr/bin/FeelingSurfViewe
 # the binary starts but dies on "libffmpeg.so: cannot open shared object"
 # (found in the 2026-10-23 Render retest)
 COPY --from=feelingsurf_src /opt/FeelingSurfViewer /opt/FeelingSurfViewer
+# belt-and-braces for the loader: link the bundled libs into /usr/lib too
+RUN for f in /opt/FeelingSurfViewer/*.so*; do ln -sf "$f" /usr/lib/ 2>/dev/null; done; \
+    ldconfig 2>/dev/null; true
 COPY --from=organic_src /home/exchanger /home/exchanger
 
 RUN chmod +x /otohits/run.sh /feelingsurf-run.sh 2>/dev/null; \

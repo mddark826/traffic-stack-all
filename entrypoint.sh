@@ -97,6 +97,10 @@ if [ "$ENABLE_FEELINGSURF" != "false" ] && [ -n "$FS_TOKEN" ]; then
   cat > "$BIN/feelingsurf.sh" <<EOF
 #!/bin/bash
 export access_token="$FS_TOKEN"
+# the viewer's bundled libs (libffmpeg.so & friends) live in
+# /opt/FeelingSurfViewer; the loader must be told where they are,
+# otherwise the binary dies on "libffmpeg.so: cannot open shared object"
+export LD_LIBRARY_PATH="/opt/FeelingSurfViewer\${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
 cd /home/fsviewer
 exec /feelingsurf-run.sh
 EOF
