@@ -109,6 +109,9 @@ if [ "$ENABLE_ORGANIC" != "false" ] && [ -n "$ORGANIC_SESSION_KEY" ]; then
 #!/bin/bash
 cd /home/exchanger
 export PORT=3000
+export SSL_KEY_PATH=/home/exchanger/certs/key.pem
+export SSL_CERT_PATH=/home/exchanger/certs/cert.pem
+export PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 exec node src/server.js
 EOF
   add_program organichits "$BIN/organichits.sh"

@@ -24,11 +24,15 @@ FROM 9hitste/appv6
 
 USER root
 
-# supervisor = runs all viewers in one container; nodejs = Organic Hits app;
-# python3 = Render port-check server + keep-alive pinger
+# supervisor = runs all viewers in one container;
+# python3 = Render port-check server + keep-alive pinger.
+# (Node is NOT installed from apt — the Organic Hits app needs Node 24,
+#  so its own Node binary is copied from the official exchanger image below.)
 RUN apt-get update && apt-get install -y --no-install-recommends \
-      supervisor python3 nodejs \
+      supervisor python3 \
     && rm -rf /var/lib/apt/lists/*
+
+COPY --from=organic_src /usr/local/bin/node /usr/local/bin/node
 
 # --- copy the other viewers' app folders in ---
 COPY --from=otohits_src /otohits /otohits
