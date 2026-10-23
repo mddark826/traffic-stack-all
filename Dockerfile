@@ -44,6 +44,11 @@ COPY --from=feelingsurf_src /run.sh /feelingsurf-run.sh
 # /usr/bin/FeelingSurfViewer) — without this copy the viewer cannot start
 # (found in the 2026-10-23 Render test: "No such file or directory")
 COPY --from=feelingsurf_src /usr/bin/FeelingSurfViewer /usr/bin/FeelingSurfViewer
+# the app's bundled Chromium runtime (libffmpeg.so, libEGL.so, resources)
+# lives in /opt/FeelingSurfViewer in its own image — without this folder
+# the binary starts but dies on "libffmpeg.so: cannot open shared object"
+# (found in the 2026-10-23 Render retest)
+COPY --from=feelingsurf_src /opt/FeelingSurfViewer /opt/FeelingSurfViewer
 COPY --from=organic_src /home/exchanger /home/exchanger
 
 RUN chmod +x /otohits/run.sh /feelingsurf-run.sh 2>/dev/null; \
