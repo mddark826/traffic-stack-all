@@ -40,17 +40,20 @@ COPY --from=organic_src /usr/local/bin/node /usr/local/bin/node
 COPY --from=otohits_src /otohits /otohits
 COPY --from=feelingsurf_src /home/fsviewer /home/fsviewer
 COPY --from=feelingsurf_src /run.sh /feelingsurf-run.sh
-# the viewer binary itself lives in /usr/bin in its own image (run.sh calls
-# /usr/bin/FeelingSurfViewer) — without this copy the viewer cannot start
-# (found in the 2026-10-23 Render test: "No such file or directory")
-COPY --from=feelingsurf_src /usr/bin/FeelingSurfViewer /usr/bin/FeelingSurfViewer
+# NOTE: do NOT copy /usr/bin/FeelingSurfViewer itself — in its own image it
+# is a SYMLINK into /opt/FeelingSurfViewer, and the Electron binary must run
+# from that folder (it loads icudtl.dat & friends from its own directory;
+# a dereferenced copy in /usr/bin crashes with an ICU-data SIGTRAP, found
+# in the 2026-10-23 Render retests). The symlink is recreated below.
 # the app's bundled Chromium runtime (libffmpeg.so, libEGL.so, resources)
 # lives in /opt/FeelingSurfViewer in its own image — without this folder
 # the binary starts but dies on "libffmpeg.so: cannot open shared object"
 # (found in the 2026-10-23 Render retest)
 COPY --from=feelingsurf_src /opt/FeelingSurfViewer /opt/FeelingSurfViewer
-# belt-and-braces for the loader: link the bundled libs into /usr/lib too
-RUN for f in /opt/FeelingSurfViewer/*.so*; do ln -sf "$f" /usr/lib/ 2>/dev/null; done; \
+# recreate the app's own symlink chain (see note above) and, as
+# belt-and-braces for the loader, link the bundled libs into /usr/lib too
+RUN ln -sf /opt/FeelingSurfViewer/FeelingSurfViewer /usr/bin/FeelingSurfViewer && \
+    for f in /opt/FeelingSurfViewer/*.so*; do ln -sf "$f" /usr/lib/ 2>/dev/null; done; \
     ldconfig 2>/dev/null; true
 COPY --from=organic_src /home/exchanger /home/exchanger
 
