@@ -1,0 +1,20 @@
+# Local / big-host test: runs the same all-in-one container as the cloud
+# web service. Needs a host with ~5-6 GB free RAM for all 4 Linux viewers.
+services:
+  traffic-stack:
+    build: .
+    container_name: traffic-stack-all
+    restart: unless-stopped
+    shm_size: "2gb"
+    ports:
+      - "10000:10000"
+    environment:
+      PORT: "10000"
+      NINEHITS_KEY: "${NINEHITS_KEY:-}"
+      APPLICATION_KEY: "${APPLICATION_KEY:-}"
+      FEELINGSURF_TOKEN: "${FEELINGSURF_TOKEN:-}"
+      ORGANIC_SESSION_KEY: "${ORGANIC_SESSION_KEY:-}"
+      ENABLE_9HITS: "${ENABLE_9HITS:-true}"
+      ENABLE_OTOHITS: "${ENABLE_OTOHITS:-true}"
+      ENABLE_FEELINGSURF: "${ENABLE_FEELINGSURF:-true}"
+      ENABLE_ORGANIC: "${ENABLE_ORGANIC:-true}"

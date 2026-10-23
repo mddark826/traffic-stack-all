@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: traffic-stack-all
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: NINEHITS_KEY
+        sync: false
+      - key: APPLICATION_KEY
+        sync: false
+      - key: FEELINGSURF_TOKEN
+        sync: false
+      - key: ORGANIC_SESSION_KEY
+        sync: false
