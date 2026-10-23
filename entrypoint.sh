@@ -77,6 +77,11 @@ if [ "$ENABLE_OTOHITS" != "false" ] && [ -n "$APPLICATION_KEY" ]; then
   cat > "$BIN/otohits.sh" <<'EOF'
 #!/bin/bash
 export OTO_DOCKER=true
+# Otohits refuses to start when /dev/shm is the default 64MB (it wants
+# 1GB) and cloud containers cannot set --shm-size. As root we try to
+# remount /dev/shm bigger; if the platform forbids it, the viewer will
+# print its shared-memory error in the log (seen in the first test).
+mount -t tmpfs -o size=1024m tmpfs /dev/shm 2>/dev/null || true
 cd /otohits
 exec /otohits/run.sh
 EOF

@@ -40,6 +40,10 @@ COPY --from=organic_src /usr/local/bin/node /usr/local/bin/node
 COPY --from=otohits_src /otohits /otohits
 COPY --from=feelingsurf_src /home/fsviewer /home/fsviewer
 COPY --from=feelingsurf_src /run.sh /feelingsurf-run.sh
+# the viewer binary itself lives in /usr/bin in its own image (run.sh calls
+# /usr/bin/FeelingSurfViewer) — without this copy the viewer cannot start
+# (found in the 2026-10-23 Render test: "No such file or directory")
+COPY --from=feelingsurf_src /usr/bin/FeelingSurfViewer /usr/bin/FeelingSurfViewer
 COPY --from=organic_src /home/exchanger /home/exchanger
 
 RUN chmod +x /otohits/run.sh /feelingsurf-run.sh 2>/dev/null; \
