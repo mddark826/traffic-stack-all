@@ -60,6 +60,13 @@ docker logs -f traffic-stack-all
 
 ## নিরাপত্তা
 
-এই repo-তে **কোনো আসল চাবি নেই** — সব চাবি শুধু Render/Railway-এর
-service variable-এ থাকবে। আগের one-click repo গুলোর মতো public
-repo-তে token বসানো হয়নি।
+Otohits, FeelingSurf আর Organic Hits-এর **কোনো আসল চাবি এই repo-তে
+নেই** — ওগুলো শুধু Render/Railway-এর service variable-এ থাকবে।
+
+শুধু 9Hits-এর ক্ষেত্রে ব্যতিক্রম: ব্যবহারকারীর সিদ্ধান্তে (2026-10-23)
+এই stack-এর জন্য বেছে নেওয়া একমাত্র 9Hits account **"mddark"**-এর
+token-টা Dockerfile-এ default হিসাবে বসানো আছে — যাতে variable ছাড়াই
+deploy হয়। এই একই token ব্যবহারকারীর `9hits-viewer` repo-তে আগেই
+public আছে। বাকি 3টা 9Hits account (mddark826, faka, tara) এই
+stack-এ ব্যবহার হবে না। Service variable-এ `NINEHITS_KEY` দিলে
+default-টা override হয়ে যাবে।

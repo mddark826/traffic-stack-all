@@ -11,9 +11,11 @@
 #   feelingsurf/viewer      -> /home/fsviewer  (entry /run.sh)
 #   organichits/exchanger   -> /home/exchanger (node src/server.js, port 3000)
 #
-# Keys are NEVER baked into this repo. Set them as service variables:
-#   NINEHITS_KEY, APPLICATION_KEY (Otohits), FEELINGSURF_TOKEN,
-#   ORGANIC_SESSION_KEY
+# Set the other keys as service variables (never in this repo):
+#   APPLICATION_KEY (Otohits), FEELINGSURF_TOKEN, ORGANIC_SESSION_KEY
+# Exception: the 9Hits token of the user's chosen account is baked as a
+# default further below (see the NINEHITS_KEY note). A service variable
+# named NINEHITS_KEY overrides it.
 # A viewer whose key is missing is simply skipped at boot.
 
 FROM otohits/app-next:latest AS otohits_src
@@ -44,6 +46,13 @@ RUN chmod +x /otohits/run.sh /feelingsurf-run.sh 2>/dev/null; \
     mkdir -p /home/exchanger/data /var/log/supervisor
 
 ENV OTO_DOCKER=true
+
+# 9Hits: the user's chosen account for this stack is "mddark" — its app
+# token is set here as the DEFAULT (same token already public in the
+# mddark826/9hits-viewer repo; the user picked this one on 2026-10-23
+# and dropped the other 3 accounts from this stack).
+# A service variable named NINEHITS_KEY still overrides this default.
+ENV NINEHITS_KEY="535e223e8084d8c2ed8ec2b95dbe759d"
 
 COPY entrypoint.sh /entrypoint.sh
 COPY keepalive.py /keepalive.py
