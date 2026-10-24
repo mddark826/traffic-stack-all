@@ -1,20 +1,45 @@
-# Local / big-host test: runs the same all-in-one container as the cloud
-# web service. Needs a host with ~5-6 GB free RAM for all 4 Linux viewers.
+# Traffic Stack on one host (VPS / Codespaces / any Docker machine).
+#
+# Two services from the SAME image:
+# - traffic-stack: 9Hits + FeelingSurf (+ optional Organic) in one container
+# - otohits:       Otohits ALONE in its own container
+#
+# Why split Otohits out? Proven in the 2026-10-24 Codespaces test: inside
+# the shared container Otohits starts and logs in but its internal viewer
+# never responds (it fights the other viewers for display/IPC resources);
+# alone in a container it surfs perfectly. One `docker compose up` still
+# starts everything — it is just 2 containers on the one host.
+#
+# network_mode: host is set because some environments (GitHub Codespaces)
+# break Docker's embedded DNS for containers; host networking also matches
+# the 9Hits viewer's official run instructions. On a normal VPS either
+# mode works.
 services:
   traffic-stack:
     build: .
     container_name: traffic-stack-all
     restart: unless-stopped
+    network_mode: host
     shm_size: "2gb"
-    ports:
-      - "10000:10000"
     environment:
       PORT: "10000"
       NINEHITS_KEY: "${NINEHITS_KEY:-}"
-      APPLICATION_KEY: "${APPLICATION_KEY:-}"
       FEELINGSURF_TOKEN: "${FEELINGSURF_TOKEN:-}"
       ORGANIC_SESSION_KEY: "${ORGANIC_SESSION_KEY:-}"
       ENABLE_9HITS: "${ENABLE_9HITS:-true}"
-      ENABLE_OTOHITS: "${ENABLE_OTOHITS:-true}"
+      ENABLE_OTOHITS: "false"
       ENABLE_FEELINGSURF: "${ENABLE_FEELINGSURF:-true}"
       ENABLE_ORGANIC: "${ENABLE_ORGANIC:-true}"
+  otohits:
+    build: .
+    container_name: traffic-stack-otohits
+    restart: unless-stopped
+    network_mode: host
+    shm_size: "2gb"
+    environment:
+      PORT: "10001"
+      APPLICATION_KEY: "${APPLICATION_KEY:-}"
+      ENABLE_9HITS: "false"
+      ENABLE_OTOHITS: "true"
+      ENABLE_FEELINGSURF: "false"
+      ENABLE_ORGANIC: "false"
